@@ -1,0 +1,57 @@
+
+CREATE TABLE pedido (
+                         id_pedido int auto_increment NOT NULL PRIMARY KEY,
+                         cpf_comprador VARCHAR(20) NOT NULL,
+                         datahora_compra TIMESTAMP NOT NULL
+);
+
+
+CREATE TABLE pedido_item (
+                         id_pedido int  NOT NULL,
+                         id_produto int NOT NULL,
+                         qtd_produto numeric NOT NULL,
+                         FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
+                         FOREIGN KEY (id_produto) REFERENCES itens(id_produto)
+        
+);
+
+
+CREATE TABLE itens (
+                         id_produto int auto_increment NOT NULL PRIMARY KEY,
+                         nm_produto VARCHAR(100) NOT NULL,
+                         vlt_unitario double NOT NULL
+);
+
+
+insert into itens (nm_produto,vlt_unitario) values ("Produto 1",23.50);
+insert into itens (nm_produto,vlt_unitario) values ("Produto 2",25.50);
+insert into itens (nm_produto,vlt_unitario) values ("Produto 3",1.00);
+
+
+insert into pedido (cpf_comprador,datahora_compra) values ("864.440.460-17",CURRENT_TIMESTAMP);
+insert into pedido (cpf_comprador,datahora_compra) values ("910.699.730-92",CURRENT_TIMESTAMP);
+insert into pedido (cpf_comprador,datahora_compra) values ("670.578.280-39",CURRENT_TIMESTAMP);
+
+
+insert into pedido_item (id_pedido,id_produto,qtd_produto) values (1,1,3);
+insert into pedido_item (id_pedido,id_produto,qtd_produto) values (1,2,1);
+insert into pedido_item (id_pedido,id_produto,qtd_produto) values (1,3,1);
+
+insert into pedido_item (id_pedido,id_produto,qtd_produto) values (2,3,1);
+
+insert into pedido_item (id_pedido,id_produto,qtd_produto) values (3,2,1);
+
+
+      
+SELECT c.nm_produto AS Nome_do_Produto, c.vlt_unitario AS Valor_Unitario, COUNT(DISTINCT a.id_pedido) AS Quantidade_de_Compras, SUM(b.qtd_produto * C.vlt_unitario) AS Total_Vendido
+FROM pedido a, pedido_item B, itens C
+WHERE a.id_pedido = b.id_pedido 
+AND b.id_produto = c.id_produto
+#AND a.cpf_comprador = "864.440.460-17"
+AND c.nm_produto LIKE "%Dut%"
+AND a.datahora_compra BETWEEN "2024-10-18 00:00:00" AND "2024-10-18 23:59:59"
+GROUP BY 
+    c.nm_produto, c.vlt_unitario
+ORDER BY 
+    Total_Vendido DESC;
+    
